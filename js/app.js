@@ -6,14 +6,14 @@ let currentCategory = 'all';
 
 // Category circle gradient backgrounds (rangoli palette)
 const CAT_GRADIENTS = {
-  all:     'linear-gradient(135deg,#FF2D87,#7B2FBE)',
-  kurtis:  'linear-gradient(135deg,#FF6B35,#FF2D87)',
-  sarees:  'linear-gradient(135deg,#FFD93D,#FF6B35)',
-  tops:    'linear-gradient(135deg,#00C2C7,#4776E6)',
-  western: 'linear-gradient(135deg,#7B2FBE,#FF2D87)',
-  bottoms: 'linear-gradient(135deg,#4776E6,#00C2C7)',
-  mens:    'linear-gradient(135deg,#2B0A5E,#4776E6)',
-  kids:    'linear-gradient(135deg,#FFD93D,#FF6B35)',
+  all:     'linear-gradient(135deg,#B8860B,#FFD700)',
+  kurtis:  'linear-gradient(135deg,#8B6914,#D4AF37)',
+  sarees:  'linear-gradient(135deg,#D4AF37,#F5E6A0)',
+  tops:    'linear-gradient(135deg,#A07820,#FFD700)',
+  western: 'linear-gradient(135deg,#6B5010,#D4AF37)',
+  bottoms: 'linear-gradient(135deg,#B8860B,#F5C842)',
+  mens:    'linear-gradient(135deg,#4A3800,#B8860B)',
+  kids:    'linear-gradient(135deg,#FFD700,#F5E6A0)',
 };
 
 // ---- Data Sources ----
