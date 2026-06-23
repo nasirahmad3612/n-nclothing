@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: admin.html
+  checksum: db5dd06b3c4e99d0fa8f0f31c6b4e30b8aec2e455a71983930692b22b60912a4
+version: "1.0"
