@@ -1002,6 +1002,7 @@ function deleteProduct(id) {
   saveToLocalStorage();
   renderProductsTable();
   showToast('Product deleted');
+  showDeployReminder();
 }
 
 let previewTimer = null;
@@ -1079,6 +1080,29 @@ function saveProduct() {
   saveToLocalStorage();
   renderProductsTable();
   closeProductForm();
+  showDeployReminder();
+}
+
+function showDeployReminder() {
+  let banner = document.getElementById('deploy-reminder');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'deploy-reminder';
+    banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2B0A5E;color:#fff;padding:14px 22px;border-radius:12px;font-size:13px;font-family:Poppins,sans-serif;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.35);display:flex;align-items:center;gap:12px;max-width:90vw;';
+    banner.innerHTML = `
+      <span style="font-size:18px">📤</span>
+      <span>Product saved! <strong>Go to Export &amp; Deploy</strong> to make it live on your website for everyone.</span>
+      <button onclick="showTab('export');document.getElementById('deploy-reminder').remove()"
+        style="background:#FF2D87;color:#fff;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:700;white-space:nowrap;font-family:inherit;">
+        Export Now
+      </button>
+      <button onclick="this.parentNode.remove()"
+        style="background:transparent;color:#ccc;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;">✕</button>
+    `;
+    document.body.appendChild(banner);
+  }
+  // Auto-dismiss after 10 seconds
+  setTimeout(() => { if (banner.parentNode) banner.remove(); }, 10000);
 }
 
 // ---- Categories ----

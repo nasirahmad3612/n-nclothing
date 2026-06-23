@@ -47,6 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearch();
 });
 
+// Auto-refresh when user returns to this tab (e.g. after saving in admin)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    switchCategory(currentCategory);
+  }
+});
+
 function applyConfig() {
   try {
     const saved = localStorage.getItem('nn_settings');
