@@ -112,7 +112,7 @@ header {
 }
 .header-search input {
   width: 100%;
-  padding: 10px 16px 10px 38px;
+  padding: 10px 16px;
   border-radius: var(--radius-full);
   border: none;
   background: rgba(255,255,255,0.12);
@@ -168,16 +168,6 @@ header {
   border: 2px solid var(--indigo);
 }
 
-.header-strip {
-  background: linear-gradient(90deg, var(--pink), var(--orange));
-  text-align: center;
-  padding: 5px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 0.3px;
-}
-.header-strip span { opacity: 0.9; }
 
 /* ================================================================
    HERO BANNER

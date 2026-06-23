@@ -181,7 +181,6 @@ function renderProducts(items) {
           ${discount ? `<span class="card-off">${discount}% off</span>` : ''}
         </div>
         ${sizesHtml}
-        <p class="card-delivery">🚚 Free delivery</p>
         <button class="card-add-btn" onclick="event.stopPropagation(); quickAddToCart('${item.id}')">
           Add to Cart
         </button>
