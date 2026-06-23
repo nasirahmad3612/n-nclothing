@@ -23,6 +23,16 @@ function getProductsByCategory(categoryId) {
   return all.filter(p => p.category === categoryId);
 }
 
+// ---- Category Source ----
+// Admin saves categories to localStorage under 'nn_categories'.
+function getCategories() {
+  try {
+    const stored = localStorage.getItem('nn_categories');
+    if (stored) return JSON.parse(stored);
+  } catch (e) { /* ignore */ }
+  return STORE_CONFIG.categories;
+}
+
 // ---- Boot ----
 document.addEventListener('DOMContentLoaded', () => {
   applyConfig();
@@ -31,7 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Apply config values to static elements
+// Merges localStorage settings saved from admin panel over the static config
 function applyConfig() {
+  try {
+    const saved = localStorage.getItem('nn_settings');
+    if (saved) Object.assign(STORE_CONFIG, JSON.parse(saved));
+  } catch (e) { /* ignore */ }
   const { storeName, whatsappNumber } = STORE_CONFIG;
   document.title = `${storeName} — Fashion Store`;
   document.getElementById('header-store-name').textContent = storeName;
@@ -40,11 +55,11 @@ function applyConfig() {
   if (waLink) waLink.href = `https://wa.me/${whatsappNumber}`;
 }
 
-// Build category tabs from config
+// Build category tabs from localStorage (admin-saved) or config
 function buildCategoryTabs() {
   const tabsEl = document.getElementById('category-tabs');
   if (!tabsEl) return;
-  tabsEl.innerHTML = STORE_CONFIG.categories.map(cat => `
+  tabsEl.innerHTML = getCategories().map(cat => `
     <li class="cat-tab" id="tab-${cat.id}" onclick="switchCategory('${cat.id}')">
       ${cat.icon} ${cat.name}
     </li>
@@ -63,7 +78,7 @@ function switchCategory(categoryId) {
     activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  const cat = STORE_CONFIG.categories.find(c => c.id === categoryId);
+  const cat = getCategories().find(c => c.id === categoryId);
   const titleEl = document.getElementById('active-category-title');
   if (titleEl) titleEl.textContent = cat ? `${cat.icon} ${cat.name}` : 'All Products';
 
