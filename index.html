@@ -4,48 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>N&N Clothify — Fresh Fashion Store</title>
-  <meta name="description" content="Shop the latest ethnic & western wear at N&N Clothify. Order directly on WhatsApp. Kurtis, Sarees, Tops, Western wear & more.">
+  <meta name="description" content="Shop the latest ethnic & western wear at N&N Clothify. Kurtis, Sarees, Tops, Western wear & more. Order directly on WhatsApp.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>">
 </head>
 <body>
 
-<!-- ========== HEADER ========== -->
+<!-- ================================================================
+     HEADER
+================================================================ -->
 <header>
-  <div class="header-inner">
+  <div class="header-top">
     <a href="/" class="logo">
       <span class="logo-name" id="header-store-name">N&amp;N Clothify</span>
       <span class="logo-tag">Fashion Store</span>
     </a>
-    <div class="header-right">
-      <button class="cart-btn" onclick="openCart()">
-        🛍️ Cart
-        <span class="cart-count">0</span>
-      </button>
+    <div class="header-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search kurtis, sarees, tops…" autocomplete="off">
     </div>
+    <button class="cart-btn" onclick="openCart()" aria-label="Open cart">
+      🛍️
+      <span class="cart-count">0</span>
+    </button>
+  </div>
+  <div class="header-strip">
+    <span>🎉 Free Delivery on All Orders &nbsp;•&nbsp; 100% Authentic Products &nbsp;•&nbsp; Easy WhatsApp Returns</span>
   </div>
 </header>
 
-<!-- ========== HERO ========== -->
+<!-- ================================================================
+     HERO BANNER
+================================================================ -->
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">✨ New Arrivals Every Week</div>
-    <h1>Dress to <em>Express.</em><br>Shop Fresh Styles</h1>
-    <p>Kurtis, Sarees, Tops & more — order directly on WhatsApp, delivered to your door</p>
-    <a href="#categories" class="hero-cta">Shop Now ↓</a>
+    <div class="hero-eyebrow">✨ New Arrivals Every Week</div>
+    <h1 class="hero-title">
+      Dress to <em>Impress.</em><br>
+      Shop Fresh Styles
+    </h1>
+    <p class="hero-sub">Kurtis, Sarees, Tops &amp; more — browse, pick your size, order on WhatsApp in seconds.</p>
+    <div class="hero-actions">
+      <a href="#products" class="hero-btn-primary">Shop Now →</a>
+      <a href="https://wa.me/919665768743" class="hero-btn-secondary" target="_blank" rel="noopener">
+        💬 Chat with Us
+      </a>
+    </div>
+  </div>
+  <div class="hero-badges">
+    <div class="hero-badge-pill">
+      <span class="badge-num">500+</span>
+      <span class="badge-label">Happy<br>Customers</span>
+    </div>
+    <div class="hero-badge-pill">
+      <span class="badge-num">70%</span>
+      <span class="badge-label">Max<br>Discount</span>
+    </div>
   </div>
 </section>
 
-<!-- ========== CATEGORY NAV ========== -->
-<nav class="category-nav" id="categories">
-  <ul class="category-tabs" id="category-tabs">
-    <!-- Injected by JS -->
-  </ul>
-</nav>
+<!-- ================================================================
+     PROMO STRIPS
+================================================================ -->
+<div class="promo-strips">
+  <div class="promo-chip">
+    <span class="promo-chip-icon">🚚</span>
+    <div class="promo-chip-text">Free Delivery<small>On every order</small></div>
+  </div>
+  <div class="promo-chip">
+    <span class="promo-chip-icon">💎</span>
+    <div class="promo-chip-text">Premium Quality<small>Handpicked styles</small></div>
+  </div>
+  <div class="promo-chip">
+    <span class="promo-chip-icon">↩️</span>
+    <div class="promo-chip-text">Easy Returns<small>Via WhatsApp</small></div>
+  </div>
+</div>
 
-<!-- ========== PRODUCTS ========== -->
-<main class="products-section">
-  <div class="products-header">
+<!-- ================================================================
+     CATEGORIES
+================================================================ -->
+<section class="categories-section" id="categories">
+  <div class="categories-header">
+    <h2>Shop by Category</h2>
+    <span class="categories-see-all">See all →</span>
+  </div>
+  <div class="category-circles" id="category-circles">
+    <!-- Injected by JS -->
+  </div>
+</section>
+
+<!-- ================================================================
+     PRODUCTS
+================================================================ -->
+<main class="products-section" id="products">
+  <div class="products-toolbar">
     <h2 class="products-title" id="active-category-title">All Products</h2>
     <span class="products-count" id="products-count"></span>
   </div>
@@ -54,29 +107,31 @@
   </div>
 </main>
 
-<!-- ========== FOOTER ========== -->
+<!-- ================================================================
+     FOOTER
+================================================================ -->
 <footer>
   <div class="footer-logo" id="footer-store-name">N&amp;N Clothify</div>
   <p>Handpicked styles for every occasion</p>
-  <a class="wa-link" id="footer-wa-link" href="#" target="_blank">
+  <a class="wa-link" id="footer-wa-link" href="https://wa.me/919665768743" target="_blank" rel="noopener">
     💬 Chat with us on WhatsApp
   </a>
-  <div class="footer-admin-link">
-    <a href="admin.html">Admin Panel</a>
-  </div>
+  <div class="footer-admin-link"><a href="admin.html">Admin Panel</a></div>
 </footer>
 
-<!-- ========== CART PANEL ========== -->
+<!-- ================================================================
+     CART PANEL
+================================================================ -->
 <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
 <aside class="cart-panel" id="cart-panel">
   <div class="cart-header">
-    <h2>Your Cart</h2>
-    <button class="close-btn" onclick="closeCart()">✕</button>
+    <h2>🛍️ Your Cart</h2>
+    <button class="close-btn" onclick="closeCart()" aria-label="Close cart">✕</button>
   </div>
   <div class="cart-body" id="cart-items"></div>
   <div class="cart-footer">
     <div class="cart-total-row">
-      <span class="cart-total-label">Total</span>
+      <span class="cart-total-label">Total Amount</span>
       <span class="cart-total-amount" id="cart-total">₹0</span>
     </div>
     <button class="checkout-btn" onclick="placeOrderOnWhatsApp()">
@@ -86,20 +141,23 @@
   </div>
 </aside>
 
-<!-- ========== PRODUCT DETAIL MODAL ========== -->
+<!-- ================================================================
+     PRODUCT DETAIL MODAL
+================================================================ -->
 <div class="modal-overlay" id="product-modal" onclick="handleModalClick(event)">
   <div class="product-modal">
-    <button class="modal-close" onclick="closeProductModal()">✕</button>
+    <button class="modal-close" onclick="closeProductModal()" aria-label="Close">✕</button>
     <div id="product-modal-content"></div>
   </div>
 </div>
 
-<!-- ========== ORDER FORM ========== -->
+<!-- ================================================================
+     ORDER FORM
+================================================================ -->
 <div class="order-form-overlay" id="order-form-overlay">
   <div class="order-form">
     <h2>Complete Your Order</h2>
-    <p>We'll open WhatsApp with your order details</p>
-
+    <p>We'll open WhatsApp with your order details ready to send.</p>
     <div class="form-group">
       <label>Your Name *</label>
       <input type="text" id="customer-name" placeholder="e.g. Priya Sharma">
@@ -112,7 +170,6 @@
       <label>Delivery Address</label>
       <textarea id="customer-address" placeholder="Your full delivery address"></textarea>
     </div>
-
     <div class="form-actions">
       <button class="btn-cancel" onclick="closeOrderForm()">Cancel</button>
       <button class="btn-whatsapp" onclick="submitOrder()">
@@ -123,20 +180,24 @@
   </div>
 </div>
 
-<!-- ========== SUCCESS ========== -->
+<!-- ================================================================
+     SUCCESS
+================================================================ -->
 <div class="success-overlay" id="success-overlay">
   <div class="success-box">
     <div class="success-icon">🎉</div>
     <h2>Order Sent!</h2>
-    <p>Your order has been sent to WhatsApp. We'll confirm it shortly.</p>
+    <p>Your order has been sent to WhatsApp. We'll confirm and deliver it soon.</p>
     <button onclick="closeSuccess()">Continue Shopping</button>
   </div>
 </div>
 
-<!-- ========== TOAST ========== -->
+<!-- TOAST -->
 <div class="cart-toast" id="cart-toast"></div>
 
-<!-- ========== SCRIPTS ========== -->
+<!-- ================================================================
+     SCRIPTS
+================================================================ -->
 <script src="js/config.js"></script>
 <script src="js/products-data.js"></script>
 <script src="js/drive.js"></script>
