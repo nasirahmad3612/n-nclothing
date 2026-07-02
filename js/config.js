@@ -7,7 +7,7 @@ const STORE_CONFIG = {
 
   // Your WhatsApp number — country code + number, no spaces or +
   // Example: India number 98765 43210 → "919876543210"
-  whatsappNumber: "919665768743",
+  whatsappNumber: "919325603310",
 
   // Store identity
   storeName: "N&N Clothify",
