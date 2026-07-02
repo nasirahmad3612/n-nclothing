@@ -718,6 +718,37 @@
       </div>
     </div>
 
+    <div class="a-card" style="margin-top:16px;">
+      <div class="a-card-title">🌐 Cloud Sync — JSONBin.io</div>
+      <div class="a-card-hint">
+        Sync products across all devices automatically. Free at <strong>jsonbin.io</strong> — no server needed.
+      </div>
+      <div class="info-box" style="margin-bottom:16px;">
+        <strong>One-time setup:</strong><br>
+        1. Go to <strong>jsonbin.io</strong> → Sign up free<br>
+        2. Click <strong>Create Bin</strong> → paste <code>{"products":[]}</code> → Create<br>
+        3. Copy the <strong>Bin ID</strong> from the URL bar (24-character code)<br>
+        4. Go to <strong>Account → API Keys</strong> → copy your <strong>Master Key</strong><br>
+        5. Paste both below → Save Settings → click <strong>Sync Now</strong><br>
+        6. Export <code>config.js</code> → commit → push to GitHub <em>(one last push needed)</em>
+      </div>
+      <div class="settings-group">
+        <label>JSONBin Bin ID</label>
+        <input type="text" id="s-jsonbin-id" placeholder="Paste your Bin ID here">
+        <small>Found in the bin URL: jsonbin.io/v3/b/<strong>THIS_PART</strong></small>
+      </div>
+      <div class="settings-group">
+        <label>Master Key <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(stored only in this browser, never on GitHub)</span></label>
+        <input type="password" id="s-jsonbin-key" placeholder="$2a$10$...">
+        <small>Account → API Keys → Master Key.</small>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button onclick="testJsonBinConnection()" style="flex:1;padding:10px;background:#1A1A1A;border:1px solid var(--border);color:var(--text-mid);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:inherit;">🔍 Test</button>
+        <button onclick="syncAllToCloud()" style="flex:2;padding:10px;background:var(--gold-grad);color:#080808;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'Cinzel',serif;">☁️ Sync Products to Cloud Now</button>
+      </div>
+      <div id="jsonbin-status" style="margin-top:10px;font-size:12px;display:none;padding:8px 12px;border-radius:8px;"></div>
+    </div>
+
     <button class="btn-save-settings" onclick="saveSettings()">Save Settings</button>
   </div>
 
@@ -997,6 +1028,13 @@ function initAdmin() {
     const cl = JSON.parse(localStorage.getItem('nn_cloudinary') || '{}');
     document.getElementById('s-cloud-name').value = cl.cloudName || STORE_CONFIG.cloudinaryCloudName || '';
     document.getElementById('s-upload-preset').value = cl.uploadPreset || STORE_CONFIG.cloudinaryUploadPreset || '';
+  } catch(e) {}
+
+  // Load JSONBin credentials
+  try {
+    const jb = JSON.parse(localStorage.getItem('nn_jsonbin') || '{}');
+    document.getElementById('s-jsonbin-id').value = jb.binId || STORE_CONFIG.jsonbinId || '';
+    document.getElementById('s-jsonbin-key').value = jb.masterKey || '';
   } catch(e) {}
 
   renderProductsTable();
@@ -1323,12 +1361,89 @@ function saveSettings() {
   const uploadPreset = document.getElementById('s-upload-preset').value.trim();
   localStorage.setItem('nn_cloudinary', JSON.stringify({ cloudName, uploadPreset }));
 
+  // Save JSONBin credentials (master key stays in localStorage only, never in code)
+  const binId     = document.getElementById('s-jsonbin-id').value.trim();
+  const masterKey = document.getElementById('s-jsonbin-key').value.trim();
+  if (binId || masterKey) {
+    localStorage.setItem('nn_jsonbin', JSON.stringify({ binId, masterKey }));
+    // Also update STORE_CONFIG so the exported config.js includes the Bin ID
+    STORE_CONFIG.jsonbinId = binId;
+  }
+
   showToast('Settings saved ✓');
 }
 
 // ---- Storage ----
 function saveToLocalStorage() {
   localStorage.setItem('nn_products', JSON.stringify(adminProducts));
+  syncAllToCloud(true); // auto-sync silently after every save
+}
+
+// ---- JSONBin Cloud Sync ----
+function getJsonBinConfig() {
+  try {
+    return JSON.parse(localStorage.getItem('nn_jsonbin') || '{}');
+  } catch(e) { return {}; }
+}
+
+function setJsonBinStatus(msg, ok) {
+  const el = document.getElementById('jsonbin-status');
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.background = ok ? 'rgba(0,196,140,0.1)' : 'rgba(255,68,68,0.1)';
+  el.style.border = `1px solid ${ok ? '#00C48C' : '#FF4444'}`;
+  el.style.color = ok ? '#00C48C' : '#FF4444';
+  el.textContent = msg;
+}
+
+async function syncAllToCloud(silent = false) {
+  const { binId, masterKey } = getJsonBinConfig();
+  if (!binId || !masterKey) {
+    if (!silent) setJsonBinStatus('⚠️ Please enter Bin ID and Master Key first.', false);
+    return;
+  }
+  if (!silent) setJsonBinStatus('⏳ Syncing...', true);
+  try {
+    const resp = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': masterKey
+      },
+      body: JSON.stringify({ products: adminProducts })
+    });
+    if (resp.ok) {
+      if (!silent) {
+        setJsonBinStatus('✓ All products synced to cloud! All devices will update on next load.', true);
+      }
+      showToast('☁️ Products synced to cloud ✓');
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      if (!silent) setJsonBinStatus(`❌ Sync failed: ${err.message || resp.status}`, false);
+    }
+  } catch(e) {
+    if (!silent) setJsonBinStatus(`❌ Network error: ${e.message}`, false);
+  }
+}
+
+async function testJsonBinConnection() {
+  const binId = document.getElementById('s-jsonbin-id').value.trim();
+  const masterKey = document.getElementById('s-jsonbin-key').value.trim();
+  if (!binId || !masterKey) { setJsonBinStatus('⚠️ Enter both Bin ID and Master Key first.', false); return; }
+  setJsonBinStatus('⏳ Testing connection...', true);
+  try {
+    const resp = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+      headers: { 'X-Master-Key': masterKey, 'X-Bin-Meta': 'false' }
+    });
+    if (resp.ok) {
+      setJsonBinStatus('✅ Connection successful! Save Settings, then click Sync.', true);
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      setJsonBinStatus(`❌ Failed: ${err.message || 'Invalid Bin ID or Master Key'}`, false);
+    }
+  } catch(e) {
+    setJsonBinStatus(`❌ Network error: ${e.message}`, false);
+  }
 }
 
 // ---- Export ----
@@ -1373,6 +1488,10 @@ const STORE_CONFIG = {
   storeName: "${STORE_CONFIG.storeName}",
   tagline: "${STORE_CONFIG.tagline}",
   currency: "₹",
+  cloudinaryCloudName:    "${STORE_CONFIG.cloudinaryCloudName || ''}",
+  cloudinaryUploadPreset: "${STORE_CONFIG.cloudinaryUploadPreset || 'ml_default'}",
+  // JSONBin Bin ID — needed for cross-device product sync (public, not secret)
+  jsonbinId: "${STORE_CONFIG.jsonbinId || ''}",
   // adminPassword is stored privately in your browser's localStorage — not here
   categories: ${JSON.stringify(cats, null, 4)}
 };

@@ -21,6 +21,9 @@ const STORE_CONFIG = {
   cloudinaryCloudName:    "lmi7ul1b",
   cloudinaryUploadPreset: "ml_default",
 
+  // JSONBin.io cloud sync — Bin ID (public read, safe in code)
+  jsonbinId: "6a4665c0f5f4af5e29540a20",
+
   // -------------------------------------------------------
   //  CATEGORIES
   //  id    → used internally (no spaces)

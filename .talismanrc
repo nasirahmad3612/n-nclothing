@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: admin.html
-  checksum: db5dd06b3c4e99d0fa8f0f31c6b4e30b8aec2e455a71983930692b22b60912a4
+  checksum: 9267e82d46b78d67448e50a2a6038936489ff0da587db1e4335e0a8d7b8ffc51
 - filename: js/config.js
-  checksum: 930f24facc3b39434b39a4ea5ddbb601e7022baaf78607aabb21176f3925a05f
+  checksum: 95a4080534e8788287dd4d1fc76fa68e1b2a79a9ef5f64b177185459d15679a3
 version: "1.0"

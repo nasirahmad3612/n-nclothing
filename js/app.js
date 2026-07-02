@@ -39,12 +39,37 @@ function getCategories() {
   return STORE_CONFIG.categories;
 }
 
+// ---- Cloud Sync (JSONBin.io) ----
+async function loadProductsFromCloud() {
+  const binId = STORE_CONFIG.jsonbinId || '';
+  if (!binId) return false;
+  try {
+    const resp = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+      headers: { 'X-Bin-Meta': 'false' }
+    });
+    if (!resp.ok) return false;
+    const data = await resp.json();
+    if (Array.isArray(data.products) && data.products.length >= 0) {
+      localStorage.setItem('nn_products', JSON.stringify(data.products));
+      return true;
+    }
+  } catch (e) {
+    console.warn('JSONBin load failed, using cached products:', e.message);
+  }
+  return false;
+}
+
 // ---- Boot ----
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   applyConfig();
   buildCategoryCircles();
+  // Show cached products immediately, then refresh from cloud
   switchCategory('all');
   initSearch();
+  const synced = await loadProductsFromCloud();
+  if (synced) {
+    switchCategory(currentCategory);
+  }
 });
 
 // Auto-refresh when user returns to this tab (e.g. after saving in admin)
