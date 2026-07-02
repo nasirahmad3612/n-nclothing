@@ -14,10 +14,12 @@ const STORE_CONFIG = {
   tagline:   "Fresh fashion, every season",
   currency:  "₹",
 
-  // Admin panel password — set this in your browser's localStorage:
-  // Open browser console on admin.html and run: localStorage.setItem('nn_admin_pw', 'your_password')
-  // Leave this blank in the public code file.
+  // Admin panel password — stored in localStorage only, never in public code.
   adminPassword: "",
+
+  // Cloudinary image upload (unsigned preset only — never put API Key/Secret here)
+  cloudinaryCloudName:    "lmi7ul1b",
+  cloudinaryUploadPreset: "ml_default",
 
   // -------------------------------------------------------
   //  CATEGORIES

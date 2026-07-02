@@ -47,14 +47,28 @@ function getDriveImageUrl(fileId) {
   return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }
 
-// Enrich a product with Drive URLs from its driveFileId
+// Generate a Cloudinary thumbnail URL by injecting transformations
+function getCloudinaryThumbUrl(url, width = 400) {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  return url.replace('/upload/', `/upload/w_${width},c_fill,q_auto/`);
+}
+
+// Enrich a product with image URLs — supports Cloudinary and Google Drive
 function enrichProduct(product) {
+  // Cloudinary / direct URL takes priority
+  if (product.imageUrl) {
+    return {
+      ...product,
+      thumbUrl: getCloudinaryThumbUrl(product.imageUrl, 400),
+      imageUrl: product.imageUrl,
+    };
+  }
+  // Google Drive fallback
   if (product.driveFileId) {
     return {
       ...product,
       thumbUrl: getDriveThumbUrl(product.driveFileId),
       imageUrl: getDriveImageUrl(product.driveFileId),
-      isDemo: false
     };
   }
   return { ...product, thumbUrl: null, imageUrl: null };
