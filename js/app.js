@@ -238,13 +238,28 @@ function openProductDetail(itemId) {
     ? Math.round((1 - item.price / item.mrp) * 100)
     : null;
 
+  const images = item.images?.length ? item.images : (item.imageUrl ? [item.imageUrl] : []);
+  const demoFallback = `<div class="modal-demo-img" style="background:${item.demoColor || '#1A1A1A'}">👗</div>`;
+
+  const galleryHtml = images.length > 0 ? `
+    <div class="modal-gallery">
+      <div class="modal-gallery-main" id="modal-main-img">
+        <img src="${images[0]}" alt="${escHtml(item.name)}" id="modal-main-img-el"
+          onerror="this.parentNode.innerHTML='${demoFallback.replace(/'/g, "\\'")}'" >
+      </div>
+      ${images.length > 1 ? `
+      <div class="modal-thumbs">
+        ${images.map((src, i) => `
+          <button class="modal-thumb ${i === 0 ? 'active' : ''}" onclick="switchModalImage(${i}, this)"
+            data-src="${src}">
+            <img src="${src.includes('res.cloudinary.com') ? src.replace('/upload/', '/upload/w_120,c_fill,q_auto/') : src}"
+              onerror="this.parentNode.style.display='none'">
+          </button>`).join('')}
+      </div>` : ''}
+    </div>` : demoFallback;
+
   content.innerHTML = `
-    <div class="modal-img">
-      ${item.imageUrl
-        ? `<img src="${item.imageUrl}" alt="${escHtml(item.name)}"
-               onerror="this.parentNode.innerHTML='<div class=\\"modal-demo-img\\" style=\\"background:${item.demoColor || '#F5F0FF'}\\">👗</div>'">`
-        : `<div class="modal-demo-img" style="background:${item.demoColor || '#F5F0FF'}">👗</div>`}
-    </div>
+    ${galleryHtml}
     <div class="modal-info">
       ${item.badge ? `<div class="modal-badge">${item.badge}</div>` : ''}
       <h2 class="modal-name">${escHtml(item.name)}</h2>
@@ -284,6 +299,14 @@ function closeProductModal() {
   const modal = document.getElementById('product-modal');
   if (modal) modal.classList.remove('open');
   document.body.style.overflow = '';
+}
+
+function switchModalImage(index, btn) {
+  const src = btn.dataset.src;
+  const mainImg = document.getElementById('modal-main-img-el');
+  if (mainImg) mainImg.src = src;
+  document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 function selectSize(btn, itemId, size) {

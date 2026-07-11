@@ -53,25 +53,28 @@ function getCloudinaryThumbUrl(url, width = 400) {
   return url.replace('/upload/', `/upload/w_${width},c_fill,q_auto/`);
 }
 
-// Enrich a product with image URLs — supports Cloudinary and Google Drive
+// Enrich a product with image URLs — supports images[] array, Cloudinary, and Google Drive
 function enrichProduct(product) {
-  // Cloudinary / direct URL takes priority
-  if (product.imageUrl) {
-    return {
-      ...product,
-      thumbUrl: getCloudinaryThumbUrl(product.imageUrl, 400),
-      imageUrl: product.imageUrl,
-    };
+  // Build unified images array from all sources
+  let images = Array.isArray(product.images) ? product.images.filter(u => u) : [];
+
+  // Backward compat: fold legacy imageUrl / driveFileId into images[]
+  if (images.length === 0) {
+    if (product.imageUrl) {
+      images = [product.imageUrl];
+    } else if (product.driveFileId) {
+      images = [getDriveImageUrl(product.driveFileId)];
+    }
   }
-  // Google Drive fallback
-  if (product.driveFileId) {
-    return {
-      ...product,
-      thumbUrl: getDriveThumbUrl(product.driveFileId),
-      imageUrl: getDriveImageUrl(product.driveFileId),
-    };
-  }
-  return { ...product, thumbUrl: null, imageUrl: null };
+
+  const thumbUrl = images.length > 0 ? getCloudinaryThumbUrl(images[0], 400) : null;
+
+  return {
+    ...product,
+    images,
+    thumbUrl,
+    imageUrl: images[0] || null,
+  };
 }
 
 // Demo placeholder colors for categories
