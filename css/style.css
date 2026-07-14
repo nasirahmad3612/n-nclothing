@@ -296,6 +296,132 @@ header {
 }
 
 /* ================================================================
+   BANNER CAROUSEL
+   ================================================================ */
+.banner-carousel {
+  position: relative;
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 20px;
+}
+.banner-viewport {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+.banner-track {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+.banner-slide {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 28px;
+  border-radius: var(--radius-lg);
+  min-height: 150px;
+  box-shadow: var(--shadow-md);
+}
+.banner-slide-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+}
+.banner-slide-body { color: #FFFFFF; }
+.banner-eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 6px;
+}
+.banner-title {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 3.5vw, 26px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.banner-sub {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 14px;
+  max-width: 420px;
+  line-height: 1.5;
+}
+.banner-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  color: var(--ink);
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: transform var(--transition);
+}
+.banner-cta:hover { transform: translateY(-2px); }
+
+.banner-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition);
+  z-index: 2;
+}
+.banner-nav:hover { background: #FFFFFF; }
+.banner-prev { left: 30px; }
+.banner-next { right: 30px; }
+
+.banner-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.banner-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: var(--line);
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--transition), width var(--transition);
+}
+.banner-dot.active {
+  background: var(--ink);
+  width: 18px;
+  border-radius: var(--radius-full);
+}
+
+@media (max-width: 600px) {
+  .banner-slide { flex-direction: column; align-items: flex-start; text-align: left; padding: 22px 20px; }
+  .banner-slide-icon { font-size: 36px; }
+  .banner-nav { display: none; }
+}
+
+/* ================================================================
    PROMO STRIPS
    ================================================================ */
 .promo-strips {

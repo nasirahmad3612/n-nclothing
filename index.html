@@ -60,18 +60,18 @@
 </section>
 
 <!-- ================================================================
-     PROMO STRIPS
+     BANNER CAROUSEL
 ================================================================ -->
-<div class="promo-strips">
-  <div class="promo-chip">
-    <span class="promo-chip-icon">💎</span>
-    <div class="promo-chip-text">Premium Quality<small>Handpicked styles</small></div>
+<section class="banner-carousel" id="banner-carousel" aria-label="Promotions">
+  <div class="banner-viewport">
+    <div class="banner-track" id="banner-track">
+      <!-- Injected by JS -->
+    </div>
   </div>
-  <div class="promo-chip">
-    <span class="promo-chip-icon">↩️</span>
-    <div class="promo-chip-text">Easy Returns<small>Via WhatsApp</small></div>
-  </div>
-</div>
+  <button class="banner-nav banner-prev" onclick="bannerPrev()" aria-label="Previous slide">‹</button>
+  <button class="banner-nav banner-next" onclick="bannerNext()" aria-label="Next slide">›</button>
+  <div class="banner-dots" id="banner-dots"></div>
+</section>
 
 <!-- ================================================================
      CATEGORIES
@@ -200,6 +200,7 @@
 <script src="js/drive.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/app.js"></script>
+<script src="js/banner.js"></script>
 
 </body>
 </html>

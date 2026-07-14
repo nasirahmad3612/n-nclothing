@@ -185,7 +185,7 @@ function renderProducts(items) {
 
     const imgHtml = item.thumbUrl
       ? `<img src="${item.thumbUrl}" alt="${escHtml(item.name)}" loading="lazy"
-             onerror="this.parentNode.innerHTML='<div class=\\"card-demo-img\\" style=\\"background:${item.demoColor || '#F5F0FF'}\\">👗</div>'">`
+             onerror="this.parentNode.innerHTML='<div class=&quot;card-demo-img&quot; style=&quot;background:${item.demoColor || '#F5F0FF'}&quot;>👗</div>'">`
       : `<div class="card-demo-img" style="background:${item.demoColor || '#F5F0FF'}">👗</div>`;
 
     const sizesHtml = item.sizes?.length
@@ -242,12 +242,13 @@ function openProductDetail(itemId) {
 
   const images = item.images?.length ? item.images : (item.imageUrl ? [item.imageUrl] : []);
   const demoFallback = `<div class="modal-demo-img" style="background:${item.demoColor || '#1A1A1A'}">👗</div>`;
+  const demoFallbackAttr = demoFallback.replace(/"/g, '&quot;').replace(/'/g, "\\'");
 
   const galleryHtml = images.length > 0 ? `
     <div class="modal-gallery">
       <div class="modal-gallery-main" id="modal-main-img">
         <img src="${images[0]}" alt="${escHtml(item.name)}" id="modal-main-img-el"
-          onerror="this.parentNode.innerHTML='${demoFallback.replace(/'/g, "\\'")}'" >
+          onerror="this.parentNode.innerHTML='${demoFallbackAttr}'" >
       </div>
       ${images.length > 1 ? `
       <div class="modal-thumbs">
