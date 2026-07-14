@@ -9,6 +9,9 @@ const STORE_CONFIG = {
   // Example: India number 98765 43210 → "919876543210"
   whatsappNumber: "919325603310",
 
+  // Your Instagram profile URL
+  instagramUrl: "https://www.instagram.com/abayas_and_ethnic_under_budget/",
+
   // Store identity
   storeName: "N&N Clothify",
   tagline:   "Fresh fashion, every season",

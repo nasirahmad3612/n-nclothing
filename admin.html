@@ -687,6 +687,11 @@
         <small>Country code + number, no spaces or + sign. India: 91XXXXXXXXXX</small>
       </div>
       <div class="settings-group">
+        <label>Instagram Profile URL</label>
+        <input type="url" id="s-instagram" placeholder="https://www.instagram.com/yourhandle/">
+        <small>Full profile link shown as a "Follow us on Instagram" button in the footer.</small>
+      </div>
+      <div class="settings-group">
         <label>Admin Password</label>
         <input type="text" id="s-password" placeholder="nn@admin2024">
         <small>Change this from the default! Then re-export config.js and commit it.</small>
@@ -1013,6 +1018,7 @@ function initAdmin() {
   document.getElementById('s-storeName').value = STORE_CONFIG.storeName;
   document.getElementById('s-tagline').value = STORE_CONFIG.tagline;
   document.getElementById('s-whatsapp').value = STORE_CONFIG.whatsappNumber;
+  document.getElementById('s-instagram').value = STORE_CONFIG.instagramUrl || '';
   document.getElementById('s-password').value = getAdminPassword();
 
   // Load Cloudinary settings
@@ -1381,12 +1387,14 @@ function saveSettings() {
   STORE_CONFIG.storeName      = document.getElementById('s-storeName').value.trim();
   STORE_CONFIG.tagline        = document.getElementById('s-tagline').value.trim();
   STORE_CONFIG.whatsappNumber = document.getElementById('s-whatsapp').value.trim();
+  STORE_CONFIG.instagramUrl   = document.getElementById('s-instagram').value.trim();
   const newPw = document.getElementById('s-password').value.trim();
   if (newPw) localStorage.setItem('nn_admin_pw', newPw);
   localStorage.setItem('nn_settings', JSON.stringify({
     storeName: STORE_CONFIG.storeName,
     tagline: STORE_CONFIG.tagline,
-    whatsappNumber: STORE_CONFIG.whatsappNumber
+    whatsappNumber: STORE_CONFIG.whatsappNumber,
+    instagramUrl: STORE_CONFIG.instagramUrl
   }));
 
   // Save Cloudinary config
@@ -1518,6 +1526,7 @@ function generateConfigFileContent() {
 
 const STORE_CONFIG = {
   whatsappNumber: "${STORE_CONFIG.whatsappNumber}",
+  instagramUrl: "${STORE_CONFIG.instagramUrl || ''}",
   storeName: "${STORE_CONFIG.storeName}",
   tagline: "${STORE_CONFIG.tagline}",
   currency: "₹",

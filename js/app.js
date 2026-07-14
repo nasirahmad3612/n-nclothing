@@ -4,16 +4,16 @@
 
 let currentCategory = 'all';
 
-// Category circle gradient backgrounds (rangoli palette)
+// Category circle gradient backgrounds (editorial palette)
 const CAT_GRADIENTS = {
-  all:     'linear-gradient(135deg,#B8860B,#FFD700)',
-  kurtis:  'linear-gradient(135deg,#8B6914,#D4AF37)',
-  sarees:  'linear-gradient(135deg,#D4AF37,#F5E6A0)',
-  tops:    'linear-gradient(135deg,#A07820,#FFD700)',
-  western: 'linear-gradient(135deg,#6B5010,#D4AF37)',
-  bottoms: 'linear-gradient(135deg,#B8860B,#F5C842)',
-  mens:    'linear-gradient(135deg,#4A3800,#B8860B)',
-  kids:    'linear-gradient(135deg,#FFD700,#F5E6A0)',
+  all:     'linear-gradient(135deg,#1A1A1A,#3D3D3D)',
+  kurtis:  'linear-gradient(135deg,#C4483A,#E28A72)',
+  sarees:  'linear-gradient(135deg,#8B3A3A,#B5524A)',
+  tops:    'linear-gradient(135deg,#6B7A5E,#95AB80)',
+  western: 'linear-gradient(135deg,#2B3A4A,#425A73)',
+  bottoms: 'linear-gradient(135deg,#C79A3D,#E8C468)',
+  mens:    'linear-gradient(135deg,#2F5D62,#437579)',
+  kids:    'linear-gradient(135deg,#D98BAF,#F0B8D0)',
 };
 
 // ---- Data Sources ----
@@ -84,7 +84,7 @@ function applyConfig() {
     const saved = localStorage.getItem('nn_settings');
     if (saved) Object.assign(STORE_CONFIG, JSON.parse(saved));
   } catch (e) { /* ignore */ }
-  const { storeName, whatsappNumber } = STORE_CONFIG;
+  const { storeName, whatsappNumber, instagramUrl } = STORE_CONFIG;
   document.title = `${storeName} — Fashion Store`;
   const nameEl = document.getElementById('header-store-name');
   if (nameEl) nameEl.textContent = storeName;
@@ -92,6 +92,8 @@ function applyConfig() {
   if (footerEl) footerEl.textContent = storeName;
   const waLink = document.getElementById('footer-wa-link');
   if (waLink) waLink.href = `https://wa.me/${whatsappNumber}`;
+  const igLink = document.getElementById('footer-ig-link');
+  if (igLink && instagramUrl) igLink.href = instagramUrl;
 }
 
 // ---- Category Circles ----
