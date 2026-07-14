@@ -1,76 +1,101 @@
 // ============================================================
 //  N&N Clothify — Home Page Banner Carousel
-//  Edit BANNER_SLIDES below to change promo banners.
+//  Banners are managed from admin.html → Banners tab.
+//  Falls back to BANNERS_DATA (js/banners-data.js) when no
+//  custom banners have been saved yet.
 // ============================================================
 
-const BANNER_SLIDES = [
-  {
-    eyebrow: "Just Dropped",
-    title: "New Dress Collection",
-    sub: "Fresh western & ethnic dresses, made for every mood.",
-    cta: "Shop Dresses",
-    icon: "👗",
-    gradient: "linear-gradient(135deg,#C4483A,#E28A72)",
-    action: () => filterBannerCategory('western')
-  },
-  {
-    eyebrow: "Limited Time",
-    title: "Festive Season Event",
-    sub: "Big discounts on sarees & kurtis for the celebration season.",
-    cta: "Explore Event",
-    icon: "🎉",
-    gradient: "linear-gradient(135deg,#2F5D62,#437579)",
-    action: () => filterBannerCategory('sarees')
-  },
-  {
-    eyebrow: "Just In",
-    title: "New Products Added",
-    sub: "Be the first to grab our latest arrivals across every category.",
-    cta: "View New Arrivals",
-    icon: "✨",
-    gradient: "linear-gradient(135deg,#C79A3D,#E8C468)",
-    action: () => filterBannerNewArrivals()
-  }
+// Fallback gradient + icon for banners that don't have an image yet
+const BANNER_FALLBACK_STYLES = [
+  { gradient: "linear-gradient(135deg,#C4483A,#E28A72)", icon: "👗" },
+  { gradient: "linear-gradient(135deg,#2F5D62,#437579)", icon: "🎉" },
+  { gradient: "linear-gradient(135deg,#C79A3D,#E8C468)", icon: "✨" },
+  { gradient: "linear-gradient(135deg,#6B7A5E,#95AB80)", icon: "🛍️" },
+  { gradient: "linear-gradient(135deg,#8B3A3A,#B5524A)", icon: "👘" }
 ];
 
 let bannerIndex = 0;
 let bannerTimer = null;
+let currentBanners = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  buildBannerCarousel();
-  startBannerAutoplay();
+  refreshBannerCarousel();
 });
 
+// Re-read banner data and rebuild the carousel (used after cloud sync / tab refocus)
+function refreshBannerCarousel() {
+  bannerIndex = 0;
+  buildBannerCarousel();
+  startBannerAutoplay();
+}
+
+function getAllBanners() {
+  try {
+    const stored = localStorage.getItem('nn_banners');
+    if (stored) return JSON.parse(stored);
+  } catch (e) { /* ignore */ }
+  return (typeof BANNERS_DATA !== 'undefined') ? BANNERS_DATA : [];
+}
+
 function buildBannerCarousel() {
+  const section = document.getElementById('banner-carousel');
   const track = document.getElementById('banner-track');
   const dots = document.getElementById('banner-dots');
-  if (!track || !dots) return;
+  if (!section || !track || !dots) return;
 
-  track.innerHTML = BANNER_SLIDES.map((slide, i) => `
-    <div class="banner-slide" style="background:${slide.gradient}" data-index="${i}">
-      <div class="banner-slide-icon">${slide.icon}</div>
+  currentBanners = getAllBanners();
+  stopBannerAutoplay();
+
+  if (currentBanners.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  track.innerHTML = currentBanners.map((banner, i) => {
+    const fallback = BANNER_FALLBACK_STYLES[i % BANNER_FALLBACK_STYLES.length];
+    const hasImage = !!banner.image;
+    const hasText = !!(banner.tag || banner.title || banner.subtitle || banner.ctaText);
+
+    const textHtml = hasText ? `
       <div class="banner-slide-body">
-        <span class="banner-eyebrow">${slide.eyebrow}</span>
-        <h3 class="banner-title">${slide.title}</h3>
-        <p class="banner-sub">${slide.sub}</p>
-        <button class="banner-cta" onclick="bannerSlides[${i}].action()">${slide.cta} →</button>
-      </div>
-    </div>
-  `).join('');
+        ${banner.tag ? `<span class="banner-eyebrow">${escBanner(banner.tag)}</span>` : ''}
+        ${banner.title ? `<h3 class="banner-title">${escBanner(banner.title)}</h3>` : ''}
+        ${banner.subtitle ? `<p class="banner-sub">${escBanner(banner.subtitle)}</p>` : ''}
+        ${banner.ctaText ? `<button class="banner-cta" onclick="event.stopPropagation(); triggerBannerAction(${i})">${escBanner(banner.ctaText)} →</button>` : ''}
+      </div>` : '';
 
-  dots.innerHTML = BANNER_SLIDES.map((_, i) => `
+    if (hasImage) {
+      return `
+      <div class="banner-slide has-image" data-index="${i}" onclick="triggerBannerAction(${i})">
+        <img class="banner-slide-img" src="${banner.image}" alt="${escBanner(banner.title || 'Promotion')}" loading="${i === 0 ? 'eager' : 'lazy'}">
+        ${hasText ? `<div class="banner-slide-scrim"></div>` : ''}
+        ${textHtml}
+      </div>`;
+    }
+
+    return `
+      <div class="banner-slide" style="background:${fallback.gradient}" data-index="${i}" onclick="triggerBannerAction(${i})">
+        <div class="banner-slide-icon">${fallback.icon}</div>
+        ${textHtml}
+      </div>`;
+  }).join('');
+
+  dots.innerHTML = currentBanners.map((_, i) => `
     <button class="banner-dot ${i === 0 ? 'active' : ''}" onclick="goToBannerSlide(${i})" aria-label="Go to slide ${i + 1}"></button>
   `).join('');
 
-  const carousel = document.getElementById('banner-carousel');
-  if (carousel) {
-    carousel.addEventListener('mouseenter', stopBannerAutoplay);
-    carousel.addEventListener('mouseleave', startBannerAutoplay);
-  }
+  updateBannerPosition();
+
+  section.removeEventListener('mouseenter', stopBannerAutoplay);
+  section.removeEventListener('mouseleave', startBannerAutoplay);
+  section.addEventListener('mouseenter', stopBannerAutoplay);
+  section.addEventListener('mouseleave', startBannerAutoplay);
 }
 
-// Exposed for inline onclick handlers
-window.bannerSlides = BANNER_SLIDES;
+function escBanner(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 function updateBannerPosition() {
   const track = document.getElementById('banner-track');
@@ -87,18 +112,20 @@ function goToBannerSlide(i) {
 }
 
 function bannerNext() {
-  bannerIndex = (bannerIndex + 1) % BANNER_SLIDES.length;
+  if (currentBanners.length === 0) return;
+  bannerIndex = (bannerIndex + 1) % currentBanners.length;
   updateBannerPosition();
 }
 
 function bannerPrev() {
-  bannerIndex = (bannerIndex - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length;
+  if (currentBanners.length === 0) return;
+  bannerIndex = (bannerIndex - 1 + currentBanners.length) % currentBanners.length;
   updateBannerPosition();
 }
 
 function startBannerAutoplay() {
   stopBannerAutoplay();
-  bannerTimer = setInterval(bannerNext, 4500);
+  if (currentBanners.length > 1) bannerTimer = setInterval(bannerNext, 4500);
 }
 
 function stopBannerAutoplay() {
@@ -106,6 +133,24 @@ function stopBannerAutoplay() {
 }
 
 // ---- Banner CTA actions ----
+function triggerBannerAction(i) {
+  const banner = currentBanners[i];
+  if (!banner) return;
+  if (banner.ctaType === 'category' && banner.ctaValue) {
+    filterBannerCategory(banner.ctaValue);
+  } else if (banner.ctaType === 'new') {
+    filterBannerNewArrivals();
+  } else if (banner.ctaType === 'all') {
+    filterBannerCategory('all');
+  } else if (banner.ctaType === 'url' && banner.ctaValue) {
+    if (/^https?:\/\//i.test(banner.ctaValue)) {
+      window.open(banner.ctaValue, '_blank', 'noopener');
+    } else {
+      window.location.href = banner.ctaValue;
+    }
+  }
+}
+
 function filterBannerCategory(categoryId) {
   switchCategory(categoryId);
   document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });

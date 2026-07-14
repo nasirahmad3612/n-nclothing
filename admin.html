@@ -295,7 +295,8 @@
     .empty-products span { font-size: 40px; display: block; margin-bottom: 10px; }
 
     /* ---- Product Form ---- */
-    #product-form-overlay {
+    #product-form-overlay,
+    #banner-form-overlay {
       display: none;
       position: fixed;
       inset: 0;
@@ -307,7 +308,8 @@
       padding: 20px;
       overflow-y: auto;
     }
-    #product-form-overlay.open { display: flex; }
+    #product-form-overlay.open,
+    #banner-form-overlay.open { display: flex; }
     .product-form-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -626,6 +628,7 @@
   <!-- Tabs -->
   <div class="admin-tabs">
     <div class="admin-tab active" onclick="showTab('products')">🛍️ Products</div>
+    <div class="admin-tab" onclick="showTab('banners')">🖼️ Banners</div>
     <div class="admin-tab" onclick="showTab('categories')">🏷️ Categories</div>
     <div class="admin-tab" onclick="showTab('settings')">⚙️ Settings</div>
     <div class="admin-tab" onclick="showTab('export')">📤 Export & Deploy</div>
@@ -652,6 +655,37 @@
             </tr>
           </thead>
           <tbody id="products-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---- BANNERS TAB ---- -->
+  <div class="tab-panel" id="tab-banners">
+    <div class="products-toolbar">
+      <h2>Homepage Carousel Banners (<span id="banner-count">0</span>)</h2>
+      <button class="btn-add-product" onclick="openBannerForm()">+ Add Banner</button>
+    </div>
+    <div class="a-card" style="padding:16px;margin-bottom:20px;">
+      <div class="a-card-hint" style="margin-bottom:0;">
+        These banners appear as a sliding carousel on your homepage, right below the hero section.
+        Upload a wide photo (landscape, 1200×500px works best) for a full-image banner, or leave the image
+        blank for a styled text banner. Drag order with the ↑ / ↓ buttons.
+      </div>
+    </div>
+    <div class="a-card" style="padding:0">
+      <div class="products-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Links To</th>
+              <th>Order</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="banners-tbody"></tbody>
         </table>
       </div>
     </div>
@@ -948,6 +982,80 @@
   </div>
 </div>
 
+<!-- ============================================================ -->
+<!--  BANNER FORM OVERLAY -->
+<!-- ============================================================ -->
+<div id="banner-form-overlay">
+  <div class="product-form-card">
+    <h2 id="banner-form-title">Add New Banner</h2>
+    <div class="form-hint">This shows as one slide in the homepage carousel.</div>
+
+    <input type="hidden" id="bf-id">
+
+    <div class="form-group">
+      <label>Banner Image <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(landscape photo, ~1200×500px)</span></label>
+      <div id="banner-img-preview" style="border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;background:#111;">
+        <div style="width:100%;height:130px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;">📷 No image yet</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" onclick="openBannerImageWidget()"
+          style="flex:1;padding:9px 10px;background:var(--gold-grad);color:#080808;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+          ☁️ Upload
+        </button>
+        <input type="text" id="bf-image" placeholder="or paste image URL"
+          oninput="updateBannerImagePreview(this.value)"
+          style="flex:3;padding:9px 10px;background:#1A1A1A;border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:inherit;outline:none;">
+      </div>
+      <small>Leave blank to show a styled text-only banner instead.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Small Tag <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optional)</span></label>
+      <input type="text" id="bf-tag" placeholder="e.g. Limited Time">
+    </div>
+
+    <div class="form-group">
+      <label>Title <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optional)</span></label>
+      <input type="text" id="bf-title" placeholder="e.g. New Dress Collection">
+    </div>
+
+    <div class="form-group">
+      <label>Subtitle <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optional)</span></label>
+      <input type="text" id="bf-subtitle" placeholder="e.g. Fresh styles for every mood">
+    </div>
+
+    <div class="form-group">
+      <label>Button Text <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;">(optional)</span></label>
+      <input type="text" id="bf-cta-text" placeholder="e.g. Shop Now">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Links To</label>
+        <select id="bf-cta-type" onchange="onBannerCtaTypeChange()">
+          <option value="category">A Category</option>
+          <option value="new">New Arrivals</option>
+          <option value="all">All Products</option>
+          <option value="url">Custom Link / URL</option>
+        </select>
+      </div>
+      <div class="form-group" id="bf-cta-category-wrap">
+        <label>Category</label>
+        <select id="bf-cta-category"></select>
+      </div>
+      <div class="form-group" id="bf-cta-url-wrap" style="display:none;">
+        <label>URL</label>
+        <input type="text" id="bf-cta-url" placeholder="https://wa.me/91...">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-cancel-form" onclick="closeBannerForm()">Cancel</button>
+      <button class="btn-save-product" onclick="saveBanner()">Save Banner</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="a-toast" id="a-toast"></div>
 
@@ -956,6 +1064,7 @@
 <!-- Scripts -->
 <script src="js/config.js"></script>
 <script src="js/products-data.js"></script>
+<script src="js/banners-data.js"></script>
 <script src="js/drive.js"></script>
 <script>
 // ============================================================
@@ -964,7 +1073,9 @@
 
 let adminProducts = [];
 let adminCategories = [];
+let adminBanners = [];
 let editingId = null;
+let editingBannerId = null;
 
 // ---- Auth ----
 // Password is stored privately in localStorage (never in the public code file).
@@ -1014,6 +1125,14 @@ function initAdmin() {
     adminCategories = [...STORE_CONFIG.categories];
   }
 
+  // Load banners from localStorage or seed file
+  try {
+    const stored = localStorage.getItem('nn_banners');
+    adminBanners = stored ? JSON.parse(stored) : [...(typeof BANNERS_DATA !== 'undefined' ? BANNERS_DATA : [])];
+  } catch(e) {
+    adminBanners = [...(typeof BANNERS_DATA !== 'undefined' ? BANNERS_DATA : [])];
+  }
+
   // Load settings into form
   document.getElementById('s-storeName').value = STORE_CONFIG.storeName;
   document.getElementById('s-tagline').value = STORE_CONFIG.tagline;
@@ -1038,6 +1157,7 @@ function initAdmin() {
   renderProductsTable();
   renderCategories();
   populateCategorySelect();
+  renderBannersTable();
 }
 
 // ---- Tab Switching ----

@@ -49,10 +49,16 @@ async function loadProductsFromCloud() {
     });
     if (!resp.ok) return false;
     const data = await resp.json();
+    let updated = false;
     if (Array.isArray(data.products) && data.products.length >= 0) {
       localStorage.setItem('nn_products', JSON.stringify(data.products));
-      return true;
+      updated = true;
     }
+    if (Array.isArray(data.banners)) {
+      localStorage.setItem('nn_banners', JSON.stringify(data.banners));
+      updated = true;
+    }
+    return updated;
   } catch (e) {
     console.warn('JSONBin load failed, using cached products:', e.message);
   }
@@ -69,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const synced = await loadProductsFromCloud();
   if (synced) {
     switchCategory(currentCategory);
+    if (typeof refreshBannerCarousel === 'function') refreshBannerCarousel();
   }
 });
 
@@ -76,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) {
     switchCategory(currentCategory);
+    if (typeof refreshBannerCarousel === 'function') refreshBannerCarousel();
   }
 });
 
