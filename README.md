@@ -24,7 +24,7 @@ You manage products via a built-in **Admin Panel** — no coding needed.
 ### 1. Set Your WhatsApp Number
 
 1. Open `admin.html` in your browser (or visit `yoursite.github.io/admin.html`)
-2. Login — default password is `admin123` (change it in the Settings tab after first login)
+2. Login — default password is `LastResort123` (change it in the Settings tab after first login)
 3. Go to **Settings** tab
 4. Enter your WhatsApp number (country code + number, no + or spaces)  
    Example for India: `919876543210`

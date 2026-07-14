@@ -98,6 +98,8 @@ function applyConfig() {
   if (nameEl) nameEl.textContent = storeName;
   const footerEl = document.getElementById('footer-store-name');
   if (footerEl) footerEl.textContent = storeName;
+  const splashNameEl = document.getElementById('splash-store-name');
+  if (splashNameEl) splashNameEl.textContent = storeName;
   const waLink = document.getElementById('footer-wa-link');
   if (waLink) waLink.href = `https://wa.me/${whatsappNumber}`;
   const igLink = document.getElementById('footer-ig-link');

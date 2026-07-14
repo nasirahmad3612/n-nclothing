@@ -319,7 +319,7 @@ header {
   gap: 20px;
   padding: 28px 28px;
   border-radius: var(--radius-lg);
-  min-height: 150px;
+  min-height: 220px;
   box-shadow: var(--shadow-md);
   cursor: pointer;
 }
@@ -334,7 +334,8 @@ header {
 .banner-slide.has-image {
   position: relative;
   padding: 0;
-  min-height: 220px;
+  aspect-ratio: 4 / 3;
+  min-height: 320px;
   overflow: hidden;
   align-items: flex-end;
 }
@@ -351,35 +352,40 @@ header {
   background: linear-gradient(0deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 45%, transparent 70%);
 }
 .banner-slide.has-image .banner-slide-body {
-  padding: 24px 28px;
+  padding: 28px 28px;
   width: 100%;
 }
 @media (min-width: 601px) {
-  .banner-slide.has-image { min-height: 320px; }
+  .banner-slide.has-image { aspect-ratio: 21 / 9; min-height: 440px; }
+  .banner-slide.has-image .banner-slide-body { padding: 36px 36px 36px 72px; }
+  .banner-slide-icon { font-size: 64px; }
+}
+@media (min-width: 1024px) {
+  .banner-slide.has-image { min-height: 520px; }
 }
 .banner-eyebrow {
   display: inline-block;
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.85);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .banner-title {
   font-family: var(--font-display);
-  font-size: clamp(18px, 3.5vw, 26px);
+  font-size: clamp(20px, 4.5vw, 38px);
   font-weight: 800;
   line-height: 1.2;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 .banner-sub {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: clamp(13px, 1.6vw, 16px);
   color: rgba(255,255,255,0.9);
-  margin-bottom: 14px;
-  max-width: 420px;
+  margin-bottom: 18px;
+  max-width: 460px;
   line-height: 1.5;
 }
 .banner-cta {
@@ -388,10 +394,10 @@ header {
   gap: 6px;
   background: #FFFFFF;
   color: var(--ink);
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: var(--radius);
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.3px;
   transition: transform var(--transition);
@@ -1407,4 +1413,81 @@ footer .ig-link:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ================================================================
+   SPLASH SCREEN
+================================================================ */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: var(--ink);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.splash-screen.splash-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.splash-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(48px, 16vw, 88px);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.splash-letter,
+.splash-amp {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(24px) scale(0.6) rotate(-8deg);
+  animation: splashLetterIn 0.55s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.splash-letter { color: var(--paper); }
+.splash-amp { color: var(--accent); }
+.splash-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  opacity: 0;
+  animation: splashFadeUp 0.5s ease forwards;
+  animation-delay: 0.55s;
+}
+.splash-bar {
+  width: 120px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+  opacity: 0;
+  animation: splashFadeUp 0.4s ease forwards;
+  animation-delay: 0.7s;
+}
+.splash-bar span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  animation: splashBarFill 1.3s ease forwards;
+  animation-delay: 0.7s;
+}
+@keyframes splashLetterIn {
+  to { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes splashFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes splashBarFill {
+  to { width: 100%; }
 }

@@ -11,6 +11,17 @@
 <body>
 
 <!-- ================================================================
+     SPLASH SCREEN
+================================================================ -->
+<div class="splash-screen" id="splash-screen">
+  <div class="splash-logo">
+    <span class="splash-letter" style="animation-delay:.05s">N</span><span class="splash-amp" style="animation-delay:.2s">&amp;</span><span class="splash-letter" style="animation-delay:.35s">N</span>
+  </div>
+  <div class="splash-name" id="splash-store-name">N&amp;N Clothify</div>
+  <div class="splash-bar"><span></span></div>
+</div>
+
+<!-- ================================================================
      HEADER
 ================================================================ -->
 <header>
@@ -195,6 +206,23 @@
 <!-- ================================================================
      SCRIPTS
 ================================================================ -->
+<script>
+  (function () {
+    var splash = document.getElementById('splash-screen');
+    if (!splash) return;
+    if (sessionStorage.getItem('nn_splash_shown')) {
+      splash.remove();
+      return;
+    }
+    document.body.style.overflow = 'hidden';
+    sessionStorage.setItem('nn_splash_shown', '1');
+    setTimeout(function () {
+      splash.classList.add('splash-hide');
+      document.body.style.overflow = '';
+      setTimeout(function () { splash.remove(); }, 500);
+    }, 2000);
+  })();
+</script>
 <script src="js/config.js"></script>
 <script src="js/products-data.js"></script>
 <script src="js/banners-data.js"></script>

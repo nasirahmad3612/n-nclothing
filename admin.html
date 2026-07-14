@@ -803,11 +803,14 @@
         <button class="btn-export" onclick="exportProductsFile()">
           ⬇ Download products-data.js
         </button>
+        <button class="btn-export" onclick="exportBannersFile()">
+          ⬇ Download banners-data.js
+        </button>
         <button class="btn-export" onclick="exportConfigFile()">
           ⬇ Download config.js
         </button>
         <button class="btn-export-secondary" onclick="exportBoth()">
-          ⬇ Download Both Files
+          ⬇ Download All Files
         </button>
       </div>
     </div>
@@ -1079,9 +1082,9 @@ let editingBannerId = null;
 
 // ---- Auth ----
 // Password is stored privately in localStorage (never in the public code file).
-// First-time setup: the default password is "admin123" until you set your own.
+// First-time setup: the default password is "LastResort123" until you set your own.
 function getAdminPassword() {
-  return localStorage.getItem('nn_admin_pw') || 'admin123';
+  return localStorage.getItem('nn_admin_pw') || 'LastResort123';
 }
 
 function login() {
@@ -1462,6 +1465,203 @@ function showDeployReminder() {
   setTimeout(() => { if (banner.parentNode) banner.remove(); }, 10000);
 }
 
+// ---- Banners ----
+function bannerLinkDescription(banner) {
+  if (banner.ctaType === 'category') {
+    const cat = adminCategories.find(c => c.id === banner.ctaValue);
+    return cat ? `${cat.icon} ${cat.name}` : (banner.ctaValue || '—');
+  }
+  if (banner.ctaType === 'new') return '✨ New Arrivals';
+  if (banner.ctaType === 'all') return '🛍️ All Products';
+  if (banner.ctaType === 'url') return banner.ctaValue || '—';
+  return '—';
+}
+
+function renderBannersTable() {
+  const tbody = document.getElementById('banners-tbody');
+  document.getElementById('banner-count').textContent = adminBanners.length;
+
+  if (adminBanners.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-products">
+      <span>🖼️</span>No banners yet. Click "+ Add Banner" to start.
+    </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = adminBanners.map((b, i) => `
+    <tr>
+      <td>
+        <div class="td-img">
+          ${b.image
+            ? `<img src="${b.image.includes('res.cloudinary.com') ? b.image.replace('/upload/', '/upload/w_100,c_fill,q_auto/') : b.image}" alt="" onerror="this.parentNode.innerHTML='<div class=\\"td-demo-img\\">🖼️</div>'">`
+            : `<div class="td-demo-img">🖼️</div>`}
+        </div>
+      </td>
+      <td class="td-name">${b.title || '<span style="color:var(--text-dim)">(text only)</span>'}</td>
+      <td><span class="td-category">${bannerLinkDescription(b)}</span></td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          <button class="btn-edit" ${i === 0 ? 'disabled style="opacity:.35;cursor:default;"' : ''} onclick="moveBanner(${i}, -1)" title="Move up">↑</button>
+          <button class="btn-edit" ${i === adminBanners.length - 1 ? 'disabled style="opacity:.35;cursor:default;"' : ''} onclick="moveBanner(${i}, 1)" title="Move down">↓</button>
+        </div>
+      </td>
+      <td>
+        <div class="td-actions">
+          <button class="btn-edit" onclick="editBanner('${b.id}')">Edit</button>
+          <button class="btn-delete" onclick="deleteBanner('${b.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function moveBanner(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= adminBanners.length) return;
+  [adminBanners[i], adminBanners[j]] = [adminBanners[j], adminBanners[i]];
+  saveBannersToLocalStorage();
+  renderBannersTable();
+}
+
+function populateBannerCategorySelect() {
+  const sel = document.getElementById('bf-cta-category');
+  const cats = adminCategories.filter(c => c.id !== 'all');
+  sel.innerHTML = cats.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+}
+
+function onBannerCtaTypeChange() {
+  const type = document.getElementById('bf-cta-type').value;
+  document.getElementById('bf-cta-category-wrap').style.display = type === 'category' ? 'block' : 'none';
+  document.getElementById('bf-cta-url-wrap').style.display = type === 'url' ? 'block' : 'none';
+}
+
+function openBannerForm(banner = null) {
+  editingBannerId = banner ? banner.id : null;
+  document.getElementById('banner-form-title').textContent = banner ? 'Edit Banner' : 'Add New Banner';
+
+  document.getElementById('bf-id').value = banner?.id || '';
+  document.getElementById('bf-image').value = banner?.image || '';
+  document.getElementById('bf-tag').value = banner?.tag || '';
+  document.getElementById('bf-title').value = banner?.title || '';
+  document.getElementById('bf-subtitle').value = banner?.subtitle || '';
+  document.getElementById('bf-cta-text').value = banner?.ctaText || '';
+
+  populateBannerCategorySelect();
+  document.getElementById('bf-cta-type').value = banner?.ctaType || 'category';
+  if (banner?.ctaType === 'category' && banner.ctaValue) {
+    document.getElementById('bf-cta-category').value = banner.ctaValue;
+  }
+  document.getElementById('bf-cta-url').value = (banner?.ctaType === 'url') ? (banner.ctaValue || '') : '';
+  onBannerCtaTypeChange();
+
+  updateBannerImagePreview(banner?.image || '');
+
+  document.getElementById('banner-form-overlay').classList.add('open');
+}
+
+function closeBannerForm() {
+  document.getElementById('banner-form-overlay').classList.remove('open');
+  editingBannerId = null;
+}
+
+function editBanner(id) {
+  const b = adminBanners.find(b => b.id === id);
+  if (b) openBannerForm(b);
+}
+
+function deleteBanner(id) {
+  if (!confirm('Delete this banner? This cannot be undone.')) return;
+  adminBanners = adminBanners.filter(b => b.id !== id);
+  saveBannersToLocalStorage();
+  renderBannersTable();
+  showToast('Banner deleted');
+  showDeployReminder();
+}
+
+function updateBannerImagePreview(url) {
+  const preview = document.getElementById('banner-img-preview');
+  if (!url) {
+    preview.innerHTML = `<div style="width:100%;height:130px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;">📷 No image yet</div>`;
+    return;
+  }
+  const driveId = extractDriveFileId(url);
+  const src = driveId ? getDriveThumbUrl(driveId, 600) : (url.includes('res.cloudinary.com') ? url.replace('/upload/', '/upload/w_600,c_fill,q_auto/') : url);
+  preview.innerHTML = `<img src="${src}" style="width:100%;height:130px;object-fit:cover;display:block;" onerror="this.style.display='none'">`;
+}
+
+function openBannerImageWidget() {
+  const { cloudName, uploadPreset } = getCloudinaryConfig();
+  if (!cloudName || !uploadPreset) {
+    alert('Please set your Cloudinary Cloud Name and Upload Preset in Settings first.');
+    document.querySelector('[onclick="showTab(\'settings\')"]')?.click();
+    return;
+  }
+  if (typeof cloudinary === 'undefined') {
+    alert('Cloudinary widget did not load. Check your internet connection and refresh the page.');
+    return;
+  }
+  cloudinary.openUploadWidget({
+    cloudName, uploadPreset,
+    sources: ['local', 'camera', 'url'],
+    multiple: false, cropping: false, showPoweredBy: false,
+    styles: {
+      palette: {
+        window: '#181818', windowBorder: '#2A2A2A', tabIcon: '#D4AF37',
+        menuIcons: '#888', textDark: '#F5F0E8', textLight: '#F5F0E8',
+        link: '#D4AF37', action: '#D4AF37', inactiveTabIcon: '#666',
+        error: '#FF4444', inProgress: '#D4AF37', complete: '#00C48C', sourceBg: '#111111',
+      },
+      fonts: { default: { active: true } },
+    },
+  }, (error, result) => {
+    if (error) { console.error('Cloudinary error', error); return; }
+    if (result && result.event === 'success') {
+      const url = result.info.secure_url;
+      document.getElementById('bf-image').value = url;
+      updateBannerImagePreview(url);
+      showToast('Image uploaded ✓');
+    }
+  });
+}
+
+function saveBanner() {
+  const image    = document.getElementById('bf-image').value.trim();
+  const tag      = document.getElementById('bf-tag').value.trim();
+  const title    = document.getElementById('bf-title').value.trim();
+  const subtitle = document.getElementById('bf-subtitle').value.trim();
+  const ctaText  = document.getElementById('bf-cta-text').value.trim();
+  const ctaType  = document.getElementById('bf-cta-type').value;
+  const ctaValue = ctaType === 'category'
+    ? document.getElementById('bf-cta-category').value
+    : (ctaType === 'url' ? document.getElementById('bf-cta-url').value.trim() : '');
+
+  if (!image && !title) { alert('Please add an image or at least a title for this banner.'); return; }
+  if (ctaType === 'url' && !ctaValue) { alert('Please enter a URL for the custom link.'); return; }
+
+  if (editingBannerId) {
+    const idx = adminBanners.findIndex(b => b.id === editingBannerId);
+    if (idx >= 0) {
+      adminBanners[idx] = { ...adminBanners[idx], image, tag, title, subtitle, ctaText, ctaType, ctaValue, isDemo: false };
+    }
+    showToast('Banner updated ✓');
+  } else {
+    adminBanners.push({
+      id: 'banner_' + Date.now(),
+      image, tag, title, subtitle, ctaText, ctaType, ctaValue, isDemo: false
+    });
+    showToast('Banner added ✓');
+  }
+
+  saveBannersToLocalStorage();
+  renderBannersTable();
+  closeBannerForm();
+  showDeployReminder();
+}
+
+function saveBannersToLocalStorage() {
+  localStorage.setItem('nn_banners', JSON.stringify(adminBanners));
+  syncAllToCloud(true); // auto-sync silently after every save
+}
+
 // ---- Categories ----
 function renderCategories() {
   const list = document.getElementById('categories-list');
@@ -1521,6 +1721,8 @@ function saveSettings() {
   const cloudName   = document.getElementById('s-cloud-name').value.trim();
   const uploadPreset = document.getElementById('s-upload-preset').value.trim();
   localStorage.setItem('nn_cloudinary', JSON.stringify({ cloudName, uploadPreset }));
+  STORE_CONFIG.cloudinaryCloudName = cloudName;
+  STORE_CONFIG.cloudinaryUploadPreset = uploadPreset;
 
   // Save JSONBin credentials (master key stays in localStorage only, never in code)
   const binId     = document.getElementById('s-jsonbin-id').value.trim();
@@ -1571,7 +1773,7 @@ async function syncAllToCloud(silent = false) {
         'Content-Type': 'application/json',
         'X-Master-Key': masterKey
       },
-      body: JSON.stringify({ products: adminProducts })
+      body: JSON.stringify({ products: adminProducts, banners: adminBanners })
     });
     if (resp.ok) {
       if (!silent) {
@@ -1620,9 +1822,16 @@ function exportConfigFile() {
   showToast('config.js downloaded ✓ — commit it to GitHub!');
 }
 
+function exportBannersFile() {
+  const content = generateBannersFileContent();
+  downloadFile('banners-data.js', content);
+  showToast('banners-data.js downloaded ✓ — commit it to GitHub!');
+}
+
 function exportBoth() {
   exportProductsFile();
-  setTimeout(exportConfigFile, 400);
+  setTimeout(exportBannersFile, 400);
+  setTimeout(exportConfigFile, 800);
 }
 
 function generateProductsFileContent() {
@@ -1634,6 +1843,18 @@ function generateProductsFileContent() {
 // ============================================================
 
 const PRODUCTS_DATA = ${JSON.stringify(adminProducts, null, 2)};
+`;
+}
+
+function generateBannersFileContent() {
+  return `// ============================================================
+//  N&N CLOTHIFY — Homepage Banner Data
+//
+//  Generated from Admin Panel on ${new Date().toLocaleDateString('en-IN')}
+//  DO NOT edit by hand — use admin.html → Banners tab to manage.
+// ============================================================
+
+const BANNERS_DATA = ${JSON.stringify(adminBanners, null, 2)};
 `;
 }
 
