@@ -1385,9 +1385,93 @@ footer .ig-link {
   box-shadow: 0 4px 16px rgba(221,42,123,.25);
 }
 footer .ig-link:hover { filter: brightness(1.08); transform: translateY(-1px); }
-.footer-admin-link { margin-top: 20px; font-size: 11px; }
+.footer-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 11px;
+}
+.footer-legal-links a { color: var(--ink-dim); transition: color var(--transition); letter-spacing: 0.3px; }
+.footer-legal-links a:hover { color: var(--ink); }
+.footer-legal-links .footer-dot { color: var(--line); }
+.footer-admin-link { margin-top: 10px; font-size: 11px; }
 .footer-admin-link a { color: var(--ink-dim); transition: color var(--transition); letter-spacing: 0.5px; }
 .footer-admin-link a:hover { color: var(--ink); }
+.footer-credit { margin-top: 6px; font-size: 11px; color: var(--ink-dim); }
+.footer-credit a { color: var(--ink-dim); transition: color var(--transition); letter-spacing: 0.3px; }
+.footer-credit a:hover { color: var(--ink); }
+
+/* ================================================================
+   POLICY PAGES (Privacy Policy / Terms & Conditions)
+   ================================================================ */
+.policy-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+.policy-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-mid);
+  margin-bottom: 24px;
+  transition: color var(--transition);
+}
+.policy-back-link:hover { color: var(--accent); }
+.policy-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.policy-updated {
+  font-size: 12px;
+  color: var(--ink-dim);
+  margin-bottom: 36px;
+  letter-spacing: 0.3px;
+}
+.policy-content h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 32px 0 12px;
+  letter-spacing: 0.1px;
+}
+.policy-content h2:first-child { margin-top: 0; }
+.policy-content p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink-mid);
+  margin-bottom: 14px;
+}
+.policy-content ul {
+  margin: 0 0 14px 20px;
+  color: var(--ink-mid);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.policy-content li { margin-bottom: 6px; }
+.policy-content strong { color: var(--ink); font-weight: 700; }
+.policy-content a { color: var(--accent); font-weight: 600; }
+.policy-content a:hover { text-decoration: underline; }
+.policy-highlight {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
 
 /* ================================================================
    RESPONSIVE
